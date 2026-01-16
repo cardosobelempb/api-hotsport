@@ -1,0 +1,15 @@
+export const CONFIG_TOKENS = {
+  ipHost: "!",
+  userHost: "@|@",
+  passwordHost: "#|#",
+  hotspotName: "%",
+  dnsName: "^",
+  currency: "&",
+  phone: "*",
+  email: "(",
+  infoLp: ")",
+  idleTimeout: "=",
+  sessionName: "+",
+  report: "@!@",
+  token: "#!#",
+};
