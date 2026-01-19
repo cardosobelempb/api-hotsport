@@ -1,5 +1,6 @@
 import { app } from "./app";
-import { RouterOSService } from "./services/routeros.service";
+import { routerConfig } from "./config/router.config";
+import { RouterOsClient } from "./infra/routeros.client";
 
 const PORT = process.env.PORT || 3000;
 
@@ -7,8 +8,11 @@ const PORT = process.env.PORT || 3000;
  * Inicialização do servidor
  */
 async function bootstrap() {
-  const routerOS = new RouterOSService();
-  await routerOS.connect();
+  const routerOs = new RouterOsClient(routerConfig);
+  await routerOs.connect();
+
+  // Armazena conexão no app (dependency container simples)
+  app.locals.routerOs = routerOs;
 
   app.listen(PORT, () => {
     console.log(`🚀 Servidor rodando na porta ${PORT}`);

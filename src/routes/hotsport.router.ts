@@ -1,9 +1,11 @@
+// src/routes/hotspot.routes.ts
+
 import { Router } from "express";
-import { RouterOSAPI } from "../../node_modules/node-routeros/dist/RouterOSAPI";
 import fs from "node:fs";
 import path from "node:path";
+import { RouterOsClient } from "../infra/routeros.client";
+import { HotspotUserService } from "../services/hotspot-user.service";
 
-// Configuração do arquivo
 const CONFIG_FILE = path.resolve("./config/config.json");
 
 function readConfig() {
@@ -11,14 +13,12 @@ function readConfig() {
   return JSON.parse(fs.readFileSync(CONFIG_FILE, "utf-8"));
 }
 
-export const hotsportRouter = Router();
+export const hotspotRouter = Router();
 
-/**
- * Rotas hotsportistrativas
- */
-hotsportRouter.post("/add", async (req, res) => {
-  if (!req.session.mikhmon)
+hotspotRouter.post("/add", async (req, res) => {
+  if (!req.session?.id) {
     return res.status(403).json({ message: "Forbidden" });
+  }
 
   const {
     sessname,
@@ -31,51 +31,47 @@ hotsportRouter.post("/add", async (req, res) => {
     datalimit,
     comment,
   } = req.body;
+
   const m_user = sessname.split("?")[1];
+  const config = readConfig();
 
-  let config = readConfig();
-  if (!config[m_user])
+  if (!config[m_user]) {
     return res.status(400).json({ message: "Invalid session" });
+  }
 
-  const iphost = config[m_user].ip;
-  const userhost = config[m_user].user;
-  const passwdhost = config[m_user].password;
-
-  const API = new RouterOSAPI({
-    host: iphost,
-    user: userhost,
-    password: passwdhost,
+  const router = new RouterOsClient({
+    host: config[m_user].ip,
+    user: config[m_user].user,
+    password: config[m_user].password,
   });
 
+  const service = new HotspotUserService(router);
+
   try {
-    await API.connect();
+    await router.connect();
 
     const userComment = name === password ? `vc-${comment}` : `up-${comment}`;
 
-    const add = await API.call("/ip/hotspot/user/add", {
+    const added = await service.addUser({
       server,
       name,
       password,
       profile,
-      "mac-address": macaddr,
-      disabled: "no",
-      "limit-uptime": timelimit,
-      "limit-bytes-total": datalimit,
+      macaddr,
+      timelimit,
+      datalimit,
       comment: userComment,
     });
 
-    if (!add) {
-      res.json({ message: "error", data: { error: "Failed to add user" } });
-      return;
-    }
+    const user = await service.getUserById(added.ret);
 
-    const getuser = await API.call("/ip/hotspot/user/print", {
-      "?.id": add["ret"],
-    });
-    res.json({ message: "success", data: getuser[0] });
+    res.json({ message: "success", data: user });
   } catch (err: any) {
-    res.json({ message: "error", data: { error: err.message } });
+    res.status(500).json({
+      message: "error",
+      error: err.message,
+    });
   } finally {
-    API.close();
+    router.close();
   }
 });

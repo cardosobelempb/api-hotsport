@@ -10,6 +10,7 @@ import { AppContext } from "./context/app.context";
 import { themeRouter } from "./routes/theme.routes";
 import { loadTheme } from "./services/theme.loader";
 import { sessionRouter } from "./routes/session.router";
+import poolRouter from "./routes/pool.routes";
 
 export const app = express();
 
@@ -42,6 +43,7 @@ app.use("/session", sessionRouter);
 app.use("/api", userRouter);
 app.use("/admin", adminRouter);
 app.use("/api", themeRouter);
+app.use("/api/pool", poolRouter);
 
 // 404
 app.use(notFoundHandler);
