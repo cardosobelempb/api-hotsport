@@ -1,14 +1,14 @@
 // src/services/hotspot.service.ts
 
-import { RouterOsClient } from "../infra/routeros.client";
+import { RouterOsClient } from '../infra/routeros.client'
 
-import { RouterOSResponse } from "../types/RouterOSResponse";
+import { RouterOSResponse } from '../types/RouterOSResponse'
 
 export interface HotspotActive {
-  user: string;
-  address: string;
-  macAddress: string;
-  uptime: string;
+  user: string
+  address: string
+  macAddress: string
+  uptime: string
 }
 
 export class HotspotService {
@@ -16,15 +16,15 @@ export class HotspotService {
 
   async getActive(): Promise<HotspotActive[]> {
     const rawData: RouterOSResponse[] = await this.router.command(
-      "/ip/hotspot/active/print"
-    );
+      '/ip/hotspot/active/print',
+    )
 
     // Mapeando dados RouterOS para DTO tipado
-    return rawData.map((item) => ({
+    return rawData.map(item => ({
       user: item.user,
       address: item.address,
-      macAddress: item["mac-address"],
+      macAddress: item['mac-address'],
       uptime: item.uptime,
-    }));
+    }))
   }
 }

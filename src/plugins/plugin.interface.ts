@@ -1,4 +1,4 @@
 export interface Plugin {
-  name: string;
-  run(): void;
+  name: string
+  run(): void
 }

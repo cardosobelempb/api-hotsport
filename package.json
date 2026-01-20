@@ -25,6 +25,7 @@
     "node-routeros": "^1.6.8",
     "pg": "^8.17.1",
     "reflect-metadata": "^0.2.2",
+    "routeros-node": "^0.1.0",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1",
     "typeorm": "^0.3.28",

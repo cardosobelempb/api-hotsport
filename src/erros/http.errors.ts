@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from "express";
+import { Request, Response, NextFunction } from 'express'
 
 /**
  * Handler padrão para erro 403 (Forbidden)
@@ -7,10 +7,10 @@ import { Request, Response, NextFunction } from "express";
 export function forbiddenHandler(
   _req: Request,
   res: Response,
-  _next: NextFunction
+  _next: NextFunction,
 ) {
   res.status(403).json({
-    error: "Acesso negado",
+    error: 'Acesso negado',
     code: 403,
-  });
+  })
 }

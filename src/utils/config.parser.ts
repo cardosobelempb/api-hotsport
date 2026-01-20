@@ -5,13 +5,13 @@
 export function parseConfigValue(
   line: string,
   key: string,
-  delimiter = "'"
+  delimiter = "'",
 ): string {
-  const index = line.indexOf(key);
-  if (index === -1) return "";
+  const index = line.indexOf(key)
+  if (index === -1) return ''
 
-  const sliced = line.slice(index + key.length);
-  const parts = sliced.split(delimiter);
+  const sliced = line.slice(index + key.length)
+  const parts = sliced.split(delimiter)
 
-  return parts[0] ?? "";
+  return parts[0] ?? ''
 }

@@ -1,4 +1,4 @@
-import crypto from "crypto";
+import crypto from 'crypto'
 
 /**
  * Exemplo simples de descriptografia
@@ -6,5 +6,5 @@ import crypto from "crypto";
  */
 export function decryptPassword(encrypted: string): string {
   // Exemplo fictício
-  return Buffer.from(encrypted, "base64").toString("utf-8");
+  return Buffer.from(encrypted, 'base64').toString('utf-8')
 }

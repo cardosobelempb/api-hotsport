@@ -1,12 +1,12 @@
-import { XorEncoder } from "../utils/xor-encoder";
+import { XorEncoder } from '../utils/xor-encoder'
 
-const original = "Senha123";
-const key = 42;
+const original = 'Senha123'
+const key = 42
 
 // encode
-const encoded = XorEncoder.encode(original, key);
-console.log("Encoded:", encoded);
+const encoded = XorEncoder.encode(original, key)
+console.log('Encoded:', encoded)
 
 // decode
-const decoded = XorEncoder.decode(encoded, key);
-console.log("Decoded:", decoded);
+const decoded = XorEncoder.decode(encoded, key)
+console.log('Decoded:', decoded)
