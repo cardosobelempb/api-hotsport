@@ -1,12 +1,12 @@
 // src/services/hotspot-user.service.ts
 
-import { RouterOsClient } from '../infra/routeros.client'
-import { buildRosArgs } from '../utils/routeros.utils'
+import { RouterosClient } from '@/common/infrastructure/routeros'
+import { buildRosArgs } from '../../../utils/routeros.utils'
 
-export class HotspotUserService {
-  constructor(private readonly router: RouterOsClient) {}
+export class HotspotCreateUserService {
+  constructor(private readonly router: RouterosClient) {}
 
-  async addUser(data: {
+  async execute(data: {
     server: string
     name: string
     password: string
@@ -28,14 +28,8 @@ export class HotspotUserService {
       comment: data.comment,
     })
 
-    const [result] = await this.router.command('/ip/hotspot/user/add', args)
+    const [result] = await this.router.write(['/ip/hotspot/user/add', ...args])
 
     return result
-  }
-
-  async getUserById(id: string) {
-    const args = buildRosArgs({ '?.id': id })
-    const result = await this.router.command('/ip/hotspot/user/print', args)
-    return result[0]
   }
 }

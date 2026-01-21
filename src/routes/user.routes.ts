@@ -1,6 +1,7 @@
 import { Router } from 'express'
+
 import { getDashboard } from '../controllers/dashboard.controller'
-import { getUsers, getUser } from '../controllers/user.controller'
+import { getUser, getUsers } from '../controllers/user.controller'
 
 export const userRouter = Router()
 

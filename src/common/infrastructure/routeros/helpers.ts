@@ -92,4 +92,4 @@ function buildPath(...path: string[]) {
     : pathJoin(...path)
 }
 
-export { encodeString, decodeLength, buildPath, useSentenceParser }
+export { buildPath, decodeLength, encodeString, useSentenceParser }

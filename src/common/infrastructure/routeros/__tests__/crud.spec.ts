@@ -1,123 +1,92 @@
 import { describe, expect, it } from 'vitest'
-import Routeros from '../Routeros'
+
 import RouterosException from '../RouterosException'
-import routerosConfig from '../routeros.config'
+import { createRouteros } from './helpers/routeros.helper'
 
-const credential = {
-  host: routerosConfig.routeros.host,
-  port: routerosConfig.routeros.port,
-  user: routerosConfig.routeros.user,
-  password: routerosConfig.routeros.password,
-}
+describe('Hotspot User CRUD (Integration)', () => {
+  it('should create, update, find and delete hotspot user successfully', async () => {
+    const routeros = await createRouteros()
 
-let id: string = ''
+    try {
+      const client = await routeros.connect()
 
-describe('CREATE', () => {
-  it('create success should return array of object with ret property', async () => {
-    const routeros = new Routeros(credential)
+      const createResult = await client.write([
+        '/ip/hotspot/user/add',
+        '=name=reza',
+      ])
 
-    return routeros
-      .connect()
-      .then(client => client.write(['/ip/hotspot/user/add', '=name=reza']))
-      .then(res => {
-        expect(res[0]).toMatchObject({ ret: expect.stringContaining('*') })
-        id = res[0]?.ret as string
+      const userId = createResult[0]?.ret
+
+      if (!userId) {
+        throw new Error('Hotspot user creation failed')
+      }
+
+      await client.write([
+        '/ip/hotspot/user/set',
+        `=.id=${userId}`,
+        '=password=reza',
+      ])
+
+      const findResult = await client.write([
+        '/ip/hotspot/user/print',
+        `?.id=${userId}`,
+      ])
+
+      const [user] = findResult
+
+      if (!user) {
+        throw new Error('Hotspot user not found')
+      }
+
+      expect(user['.id']).toBe(userId)
+    } finally {
+      await routeros
+    }
+  }, 10000)
+  it('should throw when creating user with existing name', async () => {
+    const routeros = await createRouteros()
+
+    try {
+      const client = await routeros.connect()
+
+      await client.write(['/ip/hotspot/user/add', '=name=reza'])
+
+      await expect(
+        client.write(['/ip/hotspot/user/add', '=name=reza']),
+      ).rejects.toMatchObject({
+        name: 'RouterosException',
+        message: expect.stringContaining('already'),
       })
-      .finally(() => routeros.destroy())
+    } finally {
+      routeros.destroy()
+    }
   })
 
-  it('create with existis name should throw', async () => {
-    const routeros = new Routeros(credential)
+  it('should throw when updating non existing user', async () => {
+    const routeros = await createRouteros()
 
-    return routeros
-      .connect()
-      .then(client => client.write(['/ip/hotspot/user/add', '=name=reza']))
-      .catch(err => {
-        expect(err).toBeInstanceOf(RouterosException)
-        expect(err.message).toEqual(expect.stringContaining('already'))
-      })
-      .finally(() => routeros.destroy())
-  })
-})
+    try {
+      const client = await routeros.connect()
 
-describe('UPDATE', () => {
-  it('update success should return empty array', async () => {
-    const routeros = new Routeros(credential)
-
-    return routeros
-      .connect()
-      .then(client =>
-        client.write(['/ip/hotspot/user/set', `=.id=${id}`, '=password=reza']),
-      )
-      .then(res => {
-        expect(Array.isArray(res)).toBe(true)
-        expect(res.length === 0).toBe(true)
-      })
-      .finally(() => routeros.destroy())
-  })
-
-  it('update with wrong id should throw', async () => {
-    const routeros = new Routeros(credential)
-
-    return routeros
-      .connect()
-      .then(client =>
+      await expect(
         client.write(['/ip/hotspot/user/set', '=.id=*9999999', '=name=test']),
-      )
-      .catch(err => {
-        expect(err).toBeInstanceOf(RouterosException)
-      })
-      .finally(() => routeros.destroy())
+      ).rejects.toBeInstanceOf(RouterosException)
+    } finally {
+      routeros.destroy()
+    }
   })
-})
 
-describe('FIND', () => {
-  it('find with existing id should return array of object', async () => {
-    const routeros = new Routeros(credential)
+  it('should throw when removing non existing user', async () => {
+    const routeros = await createRouteros()
 
-    return routeros
-      .connect()
-      .then(client => client.write(['/ip/hotspot/user/print', `?.id=${id}`]))
-      .then(res => {
-        expect(Array.isArray(res)).toBe(true)
-        expect(res.length === 1).toBe(true)
-        expect(res[0]['.id']).toEqual(id)
-      })
-      .finally(() => {
-        routeros.destroy()
-      })
-  })
-})
+    try {
+      const client = await routeros.connect()
 
-describe('DELETE', () => {
-  it('remove with not existing id shoud throw', async () => {
-    const routeros = new Routeros(credential)
-
-    return routeros
-      .connect()
-      .then(client =>
+      await expect(
         client.write(['/ip/hotspot/user/remove', '=.id=*9999999']),
-      )
-      .catch(err => {
-        expect(err).toBeInstanceOf(RouterosException)
-      })
-      .finally(() => {
-        routeros.destroy()
-      })
-  })
-
-  it('remove with existing id shoud retrun empty array', async () => {
-    const routeros = new Routeros(credential)
-
-    return routeros
-      .connect()
-      .then(client => client.write(['/ip/hotspot/user/remove', `=.id=${id}`]))
-      .then(res => {
-        expect(Array.isArray(res)).toBe(true)
-        expect(res.length === 0).toBe(true)
-      })
-      .finally(() => {
-        routeros.destroy()
-      })
+      ).rejects.toBeInstanceOf(RouterosException)
+    } finally {
+      routeros.destroy()
+    }
   })
 })

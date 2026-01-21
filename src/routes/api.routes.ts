@@ -1,10 +1,10 @@
 // src/routes/api.routes.ts
 
 import { Router } from 'express'
+import { getExpireMonitorStatus } from '../controllers/expire-monitor.controller'
 import { getSystemResource } from '../controllers/system.controller'
 import { getTraffic } from '../controllers/traffic.controller'
-import { getExpireMonitorStatus } from '../controllers/expire-monitor.controller'
-import { getHotspotHosts } from '../controllers/hotspot-host.controller'
+import { getHotspotHosts } from '../routeros/infrastructure/http/controllers/HotspotCreateUserController'
 
 export function buildRoutes(services: any) {
   const router = Router()

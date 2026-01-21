@@ -1,106 +1,75 @@
 import { describe, expect, it } from 'vitest'
-import RouterosClient from '../Routeros'
-import Routeros from '../Routeros'
+
+import { RouterosClient } from '../RouterosClient'
 import RouterosException from '../RouterosException'
-import routerosConfig from '../routeros.config'
+import { createRouteros } from './helpers/routeros.helper'
 
-describe('Connection', () => {
-  it('when correct credential should return instance', async () => {
-    const routeros = new Routeros({
-      host: routerosConfig.routeros.host,
-      port: routerosConfig.routeros.port,
-      user: routerosConfig.routeros.user,
-      password: routerosConfig.routeros.password,
-    })
+describe('RouterOS Connection', () => {
+  it('should return RouterosClient instance when credentials are valid', async () => {
+    const routeros = await createRouteros()
 
-    // console.log(await routeros.write(['/ip/hotspot/user/add', '=name=reza']))
+    try {
+      const client = routeros.connect()
 
-    return routeros
-      .connect()
-      .then(client => {
-        console.log(client.write(['/ip/hotspot/user/print']))
-        expect(client).toBeInstanceOf(RouterosClient)
-      })
-      .finally(() => {
-        routeros.destroy()
-      })
+      expect(client).toBeInstanceOf(RouterosClient)
+    } finally {
+      routeros.destroy()
+    }
   })
 
-  describe('Wrong port', () => {
-    it('port incorrect should thrown RouterosException with message', async () => {
-      const routeros = new Routeros({
-        host: routerosConfig.routeros.host,
-        port: 8748,
-        user: routerosConfig.routeros.user,
-        password: routerosConfig.routeros.password,
-      })
+  it('should execute hotspot user print command successfully', async () => {
+    const routeros = await createRouteros()
 
-      return routeros
-        .connect()
-        .catch(error => {
-          expect(error).toBeInstanceOf(RouterosException)
-        })
-        .finally(() => {
-          routeros.destroy()
-        })
+    try {
+      const client = await routeros.connect()
+      const response = await client.write(['/ip/hotspot/user/print'])
+
+      expect(response).toBeDefined()
+      expect(Array.isArray(response)).toBe(true)
+    } finally {
+      routeros.destroy()
+    }
+  })
+
+  describe('Invalid port', () => {
+    it('should throw RouterosException when port is incorrect', async () => {
+      const routeros = await createRouteros({ port: 8748 })
+
+      await expect(routeros.connect()).rejects.toBeInstanceOf(RouterosException)
+
+      routeros.destroy()
     })
 
-    it('port out of range should return out of range message', async () => {
-      const routeros = new Routeros({
-        host: routerosConfig.routeros.host,
-        port: 87288,
-        user: routerosConfig.routeros.user,
-        password: routerosConfig.routeros.password,
-      })
+    it('should throw RouterosException when port is out of range', async () => {
+      const routeros = await createRouteros({ port: 87288 })
 
-      return routeros
-        .connect()
-        .catch(error => {
-          expect(error).toBeInstanceOf(RouterosException)
-        })
-        .finally(() => {
-          routeros.destroy()
-        })
+      await expect(routeros.connect()).rejects.toBeInstanceOf(RouterosException)
+
+      routeros.destroy()
     })
   })
 
-  describe('Wrong host', () => {
-    it('Wrong host with timeout should return RouterosException and timeout message', async () => {
-      const routeros = new Routeros({
+  describe('Invalid host', () => {
+    it('should throw timeout RouterosException when host is unreachable', async () => {
+      const routeros = await createRouteros({
         host: '192.168.200.1',
-        port: routerosConfig.routeros.port,
-        user: routerosConfig.routeros.user,
-        password: routerosConfig.routeros.password,
         timeout: 5,
       })
 
-      return routeros
-        .connect()
-        .catch(error => {
-          expect(error).toBeInstanceOf(RouterosException)
-          expect(error.message).toBe('Socket timeout')
-        })
-        .finally(() => {
-          routeros.destroy()
-        })
+      await expect(routeros.connect()).rejects.toMatchObject({
+        name: 'RouterosException',
+        message: 'Socket timeout',
+      })
+
+      routeros.destroy()
     }, 6000)
   })
 
-  it('wrong user show throw RouterosException', async () => {
-    const routeros = new Routeros({
-      host: routerosConfig.routeros.host,
-      port: routerosConfig.routeros.port,
-      user: 'wrong',
-      password: routerosConfig.routeros.password,
-    })
+  it('should throw RouterosException when user is invalid', async () => {
+    const routeros = await createRouteros({ user: 'wrong' })
 
-    return routeros
-      .connect()
-      .catch(error => {
-        expect(error).toBeInstanceOf(RouterosException)
-      })
-      .finally(() => {
-        routeros.destroy()
-      })
+    await expect(routeros.connect()).rejects.toBeInstanceOf(RouterosException)
+
+    routeros.destroy()
   })
 })

@@ -1,6 +1,7 @@
 // src/infra/routeros.client.ts
 
 import { RouterOSAPI } from 'node-routeros'
+
 import { RouterOSResponse } from '../types/RouterOSResponse'
 
 export class RouterOsClient {

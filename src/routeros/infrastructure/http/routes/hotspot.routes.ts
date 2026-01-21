@@ -1,7 +1,7 @@
 // src/routes/hotspot.routes.ts
 
 import { Router } from 'express'
-import { getHotspotServers } from '../controllers/hotspot-server.controller'
+import { getHotspotServers } from '../controllers/HotspotServerController'
 
 export const hotspotRouter = Router()
 
