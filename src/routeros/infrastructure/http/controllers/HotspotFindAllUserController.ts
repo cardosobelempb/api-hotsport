@@ -1,4 +1,4 @@
-import { HotspotFindAllUserService } from '@/routeros/application/services/HotspotFindAllUserService'
+import { HotspotFindAllUserService } from '@/routeros/application/usecases/HotspotFindAllUserService'
 import { Request, Response } from 'express'
 
 export class HotspotFindAllUserController {

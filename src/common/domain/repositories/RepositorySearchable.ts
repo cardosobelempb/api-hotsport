@@ -6,7 +6,8 @@ import { SearchInput, SearchOutput } from './RespositorySearch'
  */
 export abstract class RepositorySearchable<
   TEntity,
-> extends RepositoryDomain<TEntity> {
+  TCreaeteProps,
+> extends RepositoryDomain<TEntity, TCreaeteProps> {
   /**
    * Busca entidades de forma paginada.
    *

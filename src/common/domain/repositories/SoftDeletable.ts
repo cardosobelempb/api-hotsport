@@ -1,7 +1,7 @@
 /**
  * Marca uma entidade como apta a soft delete.
  */
-export interface SoftDeletable {
+export interface IRepositorySoftDeletable {
   /**
    * Data da exclusão lógica.
    * null = entidade ativa

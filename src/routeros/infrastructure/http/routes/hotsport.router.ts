@@ -3,7 +3,7 @@
 import { Router } from 'express'
 import fs from 'node:fs'
 import path from 'node:path'
-import { HotspotUserService } from '../../../application/services/HotspotCreateUserService'
+import { HotspotUserService } from '../../../application/usecases/HotspotCreateUserService'
 import { RouterOsClient } from '../infra/routeros.client'
 
 const CONFIG_FILE = path.resolve('./config/config.json')

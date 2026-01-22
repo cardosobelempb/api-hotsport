@@ -12,7 +12,7 @@ export type SearchOutput<Entity> = {
   totalPages: number
   currentPage: number
   perPage: number
-  sortBy?: string // opcional agora
+  sortBy: string // opcional agora
   sortDirection?: 'asc' | 'desc'
-  filter: string
+  filter: string | null
 }

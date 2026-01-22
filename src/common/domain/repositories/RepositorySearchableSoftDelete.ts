@@ -1,6 +1,6 @@
-import { SearchInput, SearchOutput } from './RespositorySearch'
 import { IRepositorySoftDeletable } from './IRepositorySoftDeletable'
 import { RepositorySoftDelete } from './RepositorySoftDeletable'
+import { SearchInput, SearchOutput } from './RespositorySearch'
 
 /**
  * Repositório com busca paginada e soft delete.

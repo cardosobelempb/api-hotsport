@@ -1,6 +1,6 @@
 // src/controllers/hotspot-server.controller.ts
 
-import { HotspotServerService } from '@/routeros/application/services/HotspotServerService'
+import { HotspotServerService } from '@/routeros/application/usecases/HotspotServerService'
 import { Request, Response } from 'express'
 
 export class HotspotServerController {

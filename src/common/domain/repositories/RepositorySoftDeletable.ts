@@ -1,12 +1,12 @@
-import { RepositoryDomain } from './RepositoryDomain'
 import { IRepositorySoftDeletable } from './IRepositorySoftDeletable'
+import { RepositoryDomain } from './RepositoryDomain'
 
 /**
  * Repositório com suporte a soft delete.
  */
 export abstract class RepositorySoftDelete<
   TEntity extends IRepositorySoftDeletable,
-> extends RepositoryDomain<TEntity> {
+> extends RepositoryDomain<TEntity, IRepositorySoftDeletable> {
   /**
    * Realiza exclusão lógica da entidade.
    */

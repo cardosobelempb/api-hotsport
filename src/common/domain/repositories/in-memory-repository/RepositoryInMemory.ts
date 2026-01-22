@@ -1,7 +1,7 @@
 import { NotFoundError } from '../../errors'
 import { UUIDVO } from '../../values-objects'
-import { SearchInput, SearchOutput } from '../Search'
-import { SearchableRepository } from '../SearchableRepository'
+import { RepositorySearchable } from '../RepositorySearchable'
+import { SearchInput, SearchOutput } from '../RespositorySearch'
 
 /**
  * Tipos de propriedades genéricas de uma entidade
@@ -17,9 +17,9 @@ export type ModelProps = {
 /**
  * Tipos para criação de entidade
  */
-export type CreateProps<Entity> = Partial<
-  Omit<Entity, 'id' | 'createdAt' | 'updatedAt' | 'deletedAt'>
->
+export type CreateProps = {
+  [key: string]: any
+}
 
 /**
  * Repositório genérico em memória
@@ -27,7 +27,7 @@ export type CreateProps<Entity> = Partial<
  */
 export abstract class RepositoryInMemory<
   Entity extends ModelProps,
-> implements SearchableRepository<Entity> {
+> implements RepositorySearchable<Entity, CreateProps> {
   /** Armazena todas as entidades em memória */
   protected items: Entity[] = []
 
@@ -46,19 +46,27 @@ export abstract class RepositoryInMemory<
     }
   }
 
-  /**
-   * Cria uma nova entidade em memória
-   * Não persiste
-   */
-  // newEntity(props: CreateProps<Entity>): Entity {
-  //   return {
-  //     id: randomUUID(),
-  //     createdAt: new Date(),
-  //     updatedAt: new Date(),
-  //     deletedAt: null,
-  //     ...props,
-  //   } as Entity
-  // }
+  async update(entity: Entity): Promise<Entity> {
+    await this._get(entity.id?.getValue())
+    const index = this.items.findIndex(item => item.id?.equals(entity.id))
+    this.items[index] = entity
+    return entity
+  }
+
+  create(entity: ModelProps): Entity {
+    const model = {
+      id: UUIDVO.create(),
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      ...entity,
+    }
+    return model as unknown as Entity
+  }
+
+  async insert(entity: Entity): Promise<Entity> {
+    this.items.push(entity)
+    return entity
+  }
 
   /**
    * Persiste ou atualiza a entidade em memória
