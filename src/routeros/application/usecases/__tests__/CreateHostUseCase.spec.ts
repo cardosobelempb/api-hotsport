@@ -1,7 +1,9 @@
-import { HostStatus } from '@/routeros/domain/model'
+import { BadRequestError, ConflictError } from '@/common'
 import { HostInMemoryRepository } from '@/routeros/infrastructure/memory/repositories/host-in-memory-repository'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+
 import { CreateHostUseCase } from '../create-host.usecase'
+import { makeValidCreateHostInput } from '../make/make-valid-create-host-input'
 
 describe('CreateHostUseCase', () => {
   let sut: CreateHostUseCase.UseCase
@@ -11,29 +13,43 @@ describe('CreateHostUseCase', () => {
     hostInMemoryRepository = new HostInMemoryRepository()
     sut = new CreateHostUseCase.UseCase(hostInMemoryRepository)
   })
-  it('should be create a host', async () => {
-    const spyHostRepository = vi.spyOn(hostInMemoryRepository, 'insert')
-    const input: CreateHostUseCase.Input = {
-      macAddress: '00:11:22:33:44:55',
-      address: '192.168.1.100',
-      toAddress: '',
-      server: 'server1',
-      comment: 'Test host',
-      user: 'testuser',
-      status: HostStatus.OFFLINE,
-    }
-    const result = await sut.execute(input)
+  it('should create a host', async () => {
+    // Arrange
+    const insertSpy = vi.spyOn(hostInMemoryRepository, 'insert')
+    const input = makeValidCreateHostInput()
 
-    expect(result).toBeDefined()
-    expect(result.id.getValue()).toBeDefined()
-    expect(result.macAddress).toBe(input.macAddress)
-    expect(result.address).toBe(input.address)
-    expect(result.toAddress).toBe(input.toAddress)
-    expect(result.server).toBe(input.server)
-    expect(result.comment).toBe(input.comment)
-    expect(result.user).toBe(input.user)
-    expect(result.status).toBe(input.status)
-    expect(spyHostRepository).toHaveBeenCalled()
-    expect(spyHostRepository).toHaveBeenCalledTimes(1)
+    // Act
+    const host = await sut.execute(input)
+
+    // Assert
+    expect(host).toMatchObject({
+      macAddress: input.macAddress,
+      address: input.address,
+      toAddress: input.toAddress,
+      server: input.server,
+      comment: input.comment,
+      user: input.user,
+      status: input.status,
+    })
+
+    expect(host.id).toBeDefined()
+    expect(insertSpy).toHaveBeenCalledTimes(1)
+  })
+
+  it('should throw ConflictError when trying to register a host with an existing address', async () => {
+    // Arrange
+    const input = makeValidCreateHostInput()
+
+    // Act
+    await sut.execute(input)
+
+    // Assert
+    await expect(sut.execute(input)).rejects.toBeInstanceOf(ConflictError)
+  })
+
+  it('should throw BadRequestError when address is empty', async () => {
+    const input = makeValidCreateHostInput({ address: '' })
+
+    await expect(sut.execute(input)).rejects.toThrow(BadRequestError)
   })
 })

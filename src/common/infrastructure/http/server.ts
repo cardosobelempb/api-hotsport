@@ -1,6 +1,8 @@
 import { env } from '../env'
 import { createApp } from './app'
 
+import '@/common/infrastructure/container'
+
 import type { Server } from 'http'
 
 /**

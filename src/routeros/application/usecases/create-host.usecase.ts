@@ -1,6 +1,7 @@
 import { BadRequestError, ErrorCode, UUIDVO } from '@/common'
 import { HostStatus } from '@/routeros/domain/model'
 import { HostRepository } from '@/routeros/domain/repositories/host.repository'
+import { inject, injectable } from 'tsyringe'
 
 export namespace CreateHostUseCase {
   export type Input = {
@@ -27,15 +28,19 @@ export namespace CreateHostUseCase {
     deletedAt: Date | null
   }
 
+  @injectable()
   export class UseCase {
-    constructor(private readonly hostRepository: HostRepository) {}
+    constructor(
+      @inject('HostRepository')
+      private readonly hostRepository: HostRepository,
+    ) {}
 
     async execute(input: Input): Promise<Output> {
       if (!input.address) {
         throw new BadRequestError(ErrorCode.BAD_REQUEST)
       }
 
-      // await this.hostRepository.ensureNameIsUnique(input.address)
+      await this.hostRepository.ensureNameIsUnique(input.address)
 
       const hostModel = this.hostRepository.create(input)
       await this.hostRepository.insert(hostModel)

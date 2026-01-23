@@ -22,7 +22,7 @@ const swaggerOptions = {
       description: 'Documentação da API',
     },
   },
-  apis: ['src/routes/**/*.ts'],
+  apis: ['./src/**/http/routes/*.ts'],
 }
 
 /**
