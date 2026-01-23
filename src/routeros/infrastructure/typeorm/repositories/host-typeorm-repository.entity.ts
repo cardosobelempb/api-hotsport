@@ -1,28 +1,19 @@
-import {
-  ConflictError,
-  ErrorCode,
-  NotFoundError,
-  SearchInput,
-  SearchOutput,
-} from '@/common'
-import { dataSource } from '@/common/infrastructure/typeorm'
+import { ConflictError, ErrorCode, NotFoundError, SearchInput, SearchOutput } from '@/common'
 import { HostModel } from '@/routeros/domain/model'
-import {
-  HostId,
-  HostRepository,
-} from '@/routeros/domain/repositories/host.repository'
+import { HostId, HostRepository } from '@/routeros/domain/repositories/host.repository'
+import { inject, injectable } from 'tsyringe'
 import { FindManyOptions, ILike, In, Repository } from 'typeorm'
 
 import { HostTypeormEntity } from '../entities/host-typeorm.entity'
 
+@injectable()
 export class HostsTypeormRepository implements HostRepository {
   sortableFields: string[] = ['name', 'created_at']
 
-  hostRepository: Repository<HostTypeormEntity>
-
-  constructor() {
-    this.hostRepository = dataSource.getRepository(HostTypeormEntity)
-  }
+  constructor(
+    @inject('HostsDefaultTypeormRepository')
+    private hostRepository: Repository<HostTypeormEntity>,
+  ) {}
 
   create(entity: HostTypeormEntity): HostTypeormEntity {
     return this.hostRepository.create(entity)
