@@ -36,23 +36,23 @@ export class HostInMemoryRepository
   }
   protected async applyFilter(
     items: HostModel[],
-    filter?: string,
+    filter?: string
   ): Promise<HostModel[]> {
     if (!filter) return items
     return items.filter(item =>
-      item.address.toLocaleLowerCase().includes(filter.toLocaleLowerCase()),
+      item.address.toLocaleLowerCase().includes(filter.toLocaleLowerCase())
     )
   }
 
   protected applySort(
     items: HostModel[],
     sortBy?: keyof HostModel | undefined,
-    sortDirection?: 'asc' | 'desc',
+    sortDirection?: 'asc' | 'desc'
   ): HostModel[] {
     return super.applySort(
       items,
       sortBy ?? 'createdAt',
-      sortDirection ?? 'desc',
+      sortDirection ?? 'desc'
     )
   }
 }

@@ -1,4 +1,5 @@
 import { UUIDVO } from '@/common'
+
 import { HostStatus } from './status.enum'
 
 export interface HostModel {

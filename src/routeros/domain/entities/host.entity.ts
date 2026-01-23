@@ -118,7 +118,7 @@ export class HostEntity extends EntityDomain<HostModel> {
       HostModel,
       'status' | 'createdAt' | 'updatedAt' | 'deletedAt'
     >,
-    id?: UUIDVO,
+    id?: UUIDVO
   ) {
     const hostEntity = new HostEntity(
       {
@@ -128,7 +128,7 @@ export class HostEntity extends EntityDomain<HostModel> {
         updatedAt: props.updatedAt ?? new Date(),
         deletedAt: props.deletedAt ?? null,
       },
-      id,
+      id
     )
 
     return hostEntity

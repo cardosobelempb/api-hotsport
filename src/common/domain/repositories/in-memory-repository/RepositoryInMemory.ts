@@ -38,12 +38,8 @@ export abstract class RepositoryInMemory<
    * Busca entidade por ID. Retorna null se não encontrar.
    * @param id string
    */
-  async findById(id: string): Promise<Entity | null> {
-    try {
-      return await this._get(id)
-    } catch {
-      return null
-    }
+  async findById(id: string): Promise<Entity> {
+    return await this._get(id)
   }
 
   async update(entity: Entity): Promise<Entity> {
@@ -121,7 +117,7 @@ export abstract class RepositoryInMemory<
     const paginatedItems = await this.applyPagination(
       orderedItems,
       page,
-      perPage,
+      perPage
     )
 
     return {
@@ -141,7 +137,7 @@ export abstract class RepositoryInMemory<
    */
   protected async _get(id: string | undefined): Promise<Entity> {
     const entity = this.items.find(
-      item => item.id?.getValue() === id && !item.deletedAt,
+      item => item.id?.getValue() === id && !item.deletedAt
     )
     if (!entity) throw new NotFoundError(`Entity not found using id ${id}`)
     return entity
@@ -150,14 +146,14 @@ export abstract class RepositoryInMemory<
   /** Filtro abstrato para ser implementado nas subclasses */
   protected abstract applyFilter(
     items: Entity[],
-    filter?: string,
+    filter?: string
   ): Promise<Entity[]>
 
   /** Ordenação genérica e segura */
   protected applySort(
     items: Entity[],
     sortBy?: keyof Entity,
-    sortDirection: 'asc' | 'desc' = 'asc',
+    sortDirection: 'asc' | 'desc' = 'asc'
   ): Entity[] {
     if (!sortBy || !this.sortableFields.includes(sortBy)) return items
 
@@ -186,7 +182,7 @@ export abstract class RepositoryInMemory<
   protected async applyPagination(
     items: Entity[],
     page: number = 1,
-    perPage: number = 10,
+    perPage: number = 10
   ): Promise<Entity[]> {
     const start = (page - 1) * perPage
     const end = start + perPage

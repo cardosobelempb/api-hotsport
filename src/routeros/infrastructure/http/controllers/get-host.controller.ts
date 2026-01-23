@@ -5,10 +5,7 @@ import { Request, Response } from 'express'
 import { container } from 'tsyringe'
 import z from 'zod'
 
-export async function createHostController(
-  request: Request,
-  response: Response
-) {
+export async function getHostController(request: Request, response: Response) {
   const validateDate = createHostBodySchema.safeParse(request.body)
 
   if (!validateDate.success) {

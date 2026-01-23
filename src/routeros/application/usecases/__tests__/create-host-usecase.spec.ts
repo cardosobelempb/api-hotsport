@@ -3,7 +3,9 @@ import { HostInMemoryRepository } from '@/routeros/infrastructure/memory/reposit
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { CreateHostUseCase } from '../create-host.usecase'
-import { makeValidCreateHostInput } from '../make/make-valid-create-host-input'
+import { hostMake } from '../make/host.make'
+
+import 'reflect-metadata'
 
 describe('CreateHostUseCase', () => {
   let sut: CreateHostUseCase.UseCase
@@ -16,7 +18,7 @@ describe('CreateHostUseCase', () => {
   it('should create a host', async () => {
     // Arrange
     const insertSpy = vi.spyOn(hostInMemoryRepository, 'insert')
-    const input = makeValidCreateHostInput()
+    const input = hostMake()
 
     // Act
     const host = await sut.execute(input)
@@ -38,7 +40,7 @@ describe('CreateHostUseCase', () => {
 
   it('should throw ConflictError when trying to register a host with an existing address', async () => {
     // Arrange
-    const input = makeValidCreateHostInput()
+    const input = hostMake()
 
     // Act
     await sut.execute(input)
@@ -48,7 +50,7 @@ describe('CreateHostUseCase', () => {
   })
 
   it('should throw BadRequestError when address is empty', async () => {
-    const input = makeValidCreateHostInput({ address: '' })
+    const input = hostMake({ address: '' })
 
     await expect(sut.execute(input)).rejects.toThrow(BadRequestError)
   })

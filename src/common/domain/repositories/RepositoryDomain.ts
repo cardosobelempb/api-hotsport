@@ -5,7 +5,7 @@ export abstract class RepositoryDomain<TEntity, TCreaeteProps> {
   /**
    * Busca uma entidade pelo ID.
    */
-  abstract findById(id: string): Promise<TEntity | null>
+  abstract findById(id: string): Promise<TEntity>
 
   /**
    * Persiste uma entidade (create ou update).

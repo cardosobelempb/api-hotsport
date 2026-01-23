@@ -1,6 +1,15 @@
-import { ConflictError, ErrorCode, NotFoundError, SearchInput, SearchOutput } from '@/common'
+import {
+  ConflictError,
+  ErrorCode,
+  NotFoundError,
+  SearchInput,
+  SearchOutput,
+} from '@/common'
 import { HostModel } from '@/routeros/domain/model'
-import { HostId, HostRepository } from '@/routeros/domain/repositories/host.repository'
+import {
+  HostId,
+  HostRepository,
+} from '@/routeros/domain/repositories/host.repository'
 import { inject, injectable } from 'tsyringe'
 import { FindManyOptions, ILike, In, Repository } from 'typeorm'
 
@@ -12,7 +21,7 @@ export class HostsTypeormRepository implements HostRepository {
 
   constructor(
     @inject('HostsDefaultTypeormRepository')
-    private hostRepository: Repository<HostTypeormEntity>,
+    private hostRepository: Repository<HostTypeormEntity>
   ) {}
 
   create(entity: HostTypeormEntity): HostTypeormEntity {
@@ -25,7 +34,7 @@ export class HostsTypeormRepository implements HostRepository {
     const host = await this.hostRepository.findOneBy({ name })
     if (!host) {
       throw new NotFoundError(
-        `${ErrorCode.ENTITY_NOT_FOUND} using name: ${name}`,
+        `${ErrorCode.ENTITY_NOT_FOUND} using name: ${name}`
       )
     }
 
@@ -44,7 +53,7 @@ export class HostsTypeormRepository implements HostRepository {
       throw new ConflictError(`${ErrorCode.CONFLICT_ERROR} using name: ${name}`)
     }
   }
-  async findById(id: string): Promise<HostTypeormEntity | null> {
+  async findById(id: string): Promise<HostTypeormEntity> {
     return this._get(id)
   }
   async save(entity: HostTypeormEntity): Promise<HostTypeormEntity> {
@@ -74,7 +83,7 @@ export class HostsTypeormRepository implements HostRepository {
     const allowedDirections: Array<'asc' | 'desc'> = ['asc', 'desc']
 
     const orderDirection: 'asc' | 'desc' = allowedDirections.includes(
-      normalizedSortDirection as any,
+      normalizedSortDirection as any
     )
       ? (normalizedSortDirection as 'asc' | 'desc')
       : 'desc'
@@ -111,7 +120,7 @@ export class HostsTypeormRepository implements HostRepository {
     }
   }
 
-  protected async _get(id: string): Promise<HostTypeormEntity | null> {
+  protected async _get(id: string): Promise<HostTypeormEntity> {
     const host = await this.hostRepository.findOneBy({ id })
     if (!host) {
       throw new NotFoundError(`${ErrorCode.ENTITY_NOT_FOUND} using Id: ${id}`)
